@@ -1,0 +1,33 @@
+# version 라인 삭제
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: tracklog-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: tracklog
+      MYSQL_USER: tracklog_user
+      MYSQL_PASSWORD: tracklog_password
+      TZ: Asia/Seoul
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+09:00
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tracklog-network
+
+networks:
+  tracklog-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
