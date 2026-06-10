@@ -7,6 +7,7 @@ import com.tracklog.api.domain.user.entity.User;
 import com.tracklog.api.domain.user.repository.UserRepository;
 import com.tracklog.api.global.exception.InvalidPasswordException;
 import com.tracklog.api.global.exception.UserNotFoundException;
+import com.tracklog.api.global.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +22,8 @@ public class AuthService {
     
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    
+    private final JwtTokenProvider jwtTokenProvider;
+
     /**
      * 로그인
      */
@@ -35,10 +37,16 @@ public class AuthService {
             throw new InvalidPasswordException();
         }
         
+        // 🆕 JWT 토큰 생성
+        String accessToken = jwtTokenProvider.createAccessToken(user.getId(), user.getEmail());
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
+        
         log.info("User logged in: {}", user.getEmail());
         
-        return AuthResponse.of(
+        return AuthResponse.withTokens(
                 UserResponse.from(user),
+                accessToken,
+                refreshToken,
                 "로그인 성공"
         );
     }

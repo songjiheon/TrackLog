@@ -3,11 +3,14 @@ package com.tracklog.api.domain.user.controller;
 import com.tracklog.api.domain.user.dto.UserRequest;
 import com.tracklog.api.domain.user.dto.UserResponse;
 import com.tracklog.api.domain.user.service.UserService;
+import com.tracklog.api.global.common.ApiResponse;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -22,6 +25,12 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+        return ResponseEntity.ok(ApiResponse.success(userService.getUser(userId)));
     }
     
     //특정 사용자 조회
