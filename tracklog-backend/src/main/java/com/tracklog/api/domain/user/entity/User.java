@@ -38,4 +38,17 @@ public class User {
     @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+    
+    public void updateProfile(String nickname, String profileImage) {
+        if (nickname != null && !nickname.isBlank()) {
+            this.nickname = nickname;
+        }
+        if (profileImage != null) {
+            this.profileImage = profileImage;
+        }
+    }
+    
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }
