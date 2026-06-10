@@ -1,9 +1,6 @@
-// src/main/java/com/tracklog/api/global/config/SecurityConfig.java
-
 package com.tracklog.api.global.config;
 
 import com.tracklog.api.global.security.JwtAuthenticationFilter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
+    
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
@@ -30,20 +27,27 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> 
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // JWT 사용으로 세션 사용 안함
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/**").permitAll()
-                .requestMatchers("/api/v1/auth/**").permitAll()  // 인증 API는 모두 허용
-                .requestMatchers("/api/v1/users").permitAll()    // 회원가입 허용
-                .anyRequest().authenticated()  //나머지는 인증 필요
+                .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/api/v1/users").permitAll()
+                // 🆕 Swagger UI 허용
+                .requestMatchers(
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/swagger-resources/**",
+                    "/webjars/**"
+                ).permitAll()
+                .anyRequest().authenticated()
             )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);  // JWT 필터 추가
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         
         return http.build();
     }
     
-    //PasswordEncoder 빈 추가
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
