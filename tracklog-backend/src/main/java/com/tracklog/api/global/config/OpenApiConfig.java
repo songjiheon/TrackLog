@@ -32,7 +32,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(apiInfo())
                 .servers(List.of(
-                        new Server().url("http://localhost:8080").description("개발 서버")
+                        new Server().url("http://127.0.0.1:8080").description("개발 서버")
                 ))
                 .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
                 .addSecurityItem(securityRequirement);
@@ -41,7 +41,7 @@ public class OpenApiConfig {
     private Info apiInfo() {
         return new Info()
                 .title("TrackLog API")
-                .description("운동하면서 음악을 듣고 기록하는 앱의 REST API 문서")
+                .description("음악을 듣고 기록하는 앱의 REST API 문서")
                 .version("1.0.0")
                 .contact(new Contact()
                         .name("TrackLog Team")
