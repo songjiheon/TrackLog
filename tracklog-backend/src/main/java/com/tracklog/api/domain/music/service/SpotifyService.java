@@ -20,6 +20,7 @@ import se.michaelthelin.spotify.requests.data.tracks.GetTrackRequest;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,6 +39,7 @@ public class SpotifyService {
     /**
      * 음악 검색 (Client Credentials 사용)
      */
+    /* 
     public List<TrackDto> searchTracks(String query, int limit) {
         log.info("=== 음악 검색 시작 ===");
         log.info("Query: {}, Limit: {}", query, limit);
@@ -49,6 +51,7 @@ public class SpotifyService {
             SearchTracksRequest searchTracksRequest = spotifyApi
                     .searchTracks(query)
                     .limit(limit)
+                    .market(com.neovisionaries.i18n.CountryCode.KR)
                     .build();
             
             Paging<se.michaelthelin.spotify.model_objects.specification.Track> trackPaging = 
@@ -65,6 +68,65 @@ public class SpotifyService {
             throw new RuntimeException("음악 검색에 실패했습니다: " + e.getMessage(), e);
         }
     }
+        */
+
+    public List<TrackDto> searchTracks(String query, int limit) {
+    log.info("=== 음악 검색 시작 ===");
+    log.info("Query: {}, Limit: {}", query, limit);
+    
+    ensureValidToken();
+    
+    try {
+        List<TrackDto> allTracks = new ArrayList<>();
+        
+        // ✅ limit을 10씩 나눠서 요청
+        int remaining = limit;
+        int offset = 0;
+        
+        while (remaining > 0) {
+            int currentLimit = Math.min(10, remaining);
+            
+            log.info("요청 - offset: {}, limit: {}", offset, currentLimit);
+            
+            SearchTracksRequest searchTracksRequest = spotifyApi
+                    .searchTracks(query)
+                    .limit(currentLimit)
+                    .offset(offset)
+                    .build();
+            
+            Paging<se.michaelthelin.spotify.model_objects.specification.Track> trackPaging = 
+                    searchTracksRequest.execute();
+            
+            se.michaelthelin.spotify.model_objects.specification.Track[] items = trackPaging.getItems();
+            
+            if (items.length == 0) {
+                break; // 더 이상 결과 없음
+            }
+            
+            List<TrackDto> tracks = Arrays.stream(items)
+                    .map(this::convertToTrackDto)
+                    .collect(Collectors.toList());
+            
+            allTracks.addAll(tracks);
+            
+            offset += currentLimit;
+            remaining -= currentLimit;
+            
+            // 실제 반환된 결과가 요청한 것보다 적으면 더 이상 없는 것
+            if (items.length < currentLimit) {
+                break;
+            }
+        }
+        
+        log.info("✓ 검색 성공: {}개 결과", allTracks.size());
+        
+        return allTracks;
+        
+    } catch (IOException | SpotifyWebApiException | ParseException e) {
+        log.error("✗ 음악 검색 실패: {}", e.getMessage());
+        throw new RuntimeException("음악 검색에 실패했습니다: " + e.getMessage(), e);
+    }
+}
     
     /**
      * 트랙 ID로 직접 조회

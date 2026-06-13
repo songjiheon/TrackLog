@@ -38,7 +38,7 @@ public class ReviewController {
             @Valid @RequestBody ReviewRequest request
     ) {
         log.info("=== 리뷰 작성 요청 ===");
-        log.info("User ID: {}, Track ID: {}, Rating: {}", 
+        log.info("User ID: {}, Spotify Track ID: {}, Rating: {}", 
                 userId, request.getTrackId(), request.getRating());
         
         ReviewResponse response = reviewService.createReview(userId, request);
@@ -98,13 +98,13 @@ public class ReviewController {
     }
     
     /**
-     * 트랙의 모든 리뷰 조회 (페이징)
+     * 트랙의 모든 리뷰 조회 (페이징) - ✅ Spotify ID 사용
      */
-    @GetMapping("/track/{trackId}")
-    @Operation(summary = "트랙 리뷰 목록", description = "특정 트랙의 모든 리뷰를 조회합니다")
+    @GetMapping("/track/{spotifyTrackId}")
+    @Operation(summary = "트랙 리뷰 목록", description = "특정 트랙의 모든 리뷰를 조회합니다 (Spotify ID 사용)")
     public ResponseEntity<ApiResponse<Page<ReviewResponse>>> getTrackReviews(
-            @Parameter(description = "트랙 ID") 
-            @PathVariable Long trackId,
+            @Parameter(description = "Spotify 트랙 ID") 
+            @PathVariable String spotifyTrackId,
             
             @Parameter(description = "페이지 번호 (0부터 시작)") 
             @RequestParam(defaultValue = "0") int page,
@@ -113,11 +113,11 @@ public class ReviewController {
             @RequestParam(defaultValue = "10") int size
     ) {
         log.info("=== 트랙 리뷰 목록 조회 ===");
-        log.info("Track ID: {}, Page: {}, Size: {}", trackId, page, size);
+        log.info("Spotify Track ID: {}, Page: {}, Size: {}", spotifyTrackId, page, size);
         
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         
-        Page<ReviewResponse> reviews = reviewService.getTrackReviews(trackId, pageable);
+        Page<ReviewResponse> reviews = reviewService.getTrackReviews(spotifyTrackId, pageable);
         
         log.info("✓ 조회 완료: {} 건", reviews.getTotalElements());
         
@@ -176,17 +176,18 @@ public class ReviewController {
     }
     
     /**
-     * 트랙 평점 통계
+     * 트랙 평점 통계 - ✅ Spotify ID 사용
      */
-    @GetMapping("/track/{trackId}/statistics")
-    @Operation(summary = "트랙 평점 통계", description = "트랙의 평균 평점과 평점 분포를 조회합니다")
+    @GetMapping("/track/{spotifyTrackId}/statistics")
+    @Operation(summary = "트랙 평점 통계", description = "트랙의 평균 평점과 평점 분포를 조회합니다 (Spotify ID 사용)")
     public ResponseEntity<ApiResponse<TrackRatingStatistics>> getTrackStatistics(
-            @Parameter(description = "트랙 ID") @PathVariable Long trackId
+            @Parameter(description = "Spotify 트랙 ID") 
+            @PathVariable String spotifyTrackId
     ) {
         log.info("=== 트랙 평점 통계 조회 ===");
-        log.info("Track ID: {}", trackId);
+        log.info("Spotify Track ID: {}", spotifyTrackId);
         
-        TrackRatingStatistics statistics = reviewService.getTrackStatistics(trackId);
+        TrackRatingStatistics statistics = reviewService.getTrackStatistics(spotifyTrackId);
         
         log.info("✓ 평균 평점: {}, 리뷰 수: {}", 
                 statistics.getAverageRating(), statistics.getReviewCount());
@@ -195,19 +196,42 @@ public class ReviewController {
     }
     
     /**
-     * 특정 트랙에 대한 내 리뷰 조회
+     * 특정 트랙에 대한 내 리뷰 조회 - ✅ Spotify ID 사용
      */
-    @GetMapping("/track/{trackId}/my")
-    @Operation(summary = "내 리뷰 조회", description = "특정 트랙에 대한 내 리뷰를 조회합니다")
+    @GetMapping("/track/{spotifyTrackId}/my")
+    @Operation(summary = "내 리뷰 조회", description = "특정 트랙에 대한 내 리뷰를 조회합니다 (Spotify ID 사용)")
     public ResponseEntity<ApiResponse<ReviewResponse>> getMyReviewForTrack(
-            @PathVariable Long trackId,
+            @PathVariable String spotifyTrackId,
             @AuthenticationPrincipal Long userId
     ) {
         log.info("=== 내 리뷰 조회 ===");
-        log.info("Track ID: {}, User ID: {}", trackId, userId);
+        log.info("Spotify Track ID: {}, User ID: {}", spotifyTrackId, userId);
         
-        ReviewResponse review = reviewService.getMyReviewForTrack(userId, trackId);
+        ReviewResponse review = reviewService.getMyReviewForTrack(userId, spotifyTrackId);
         
         return ResponseEntity.ok(ApiResponse.success(review));
+    }
+
+
+    @GetMapping
+    @Operation(summary = "전체 최신 리뷰 목록", description = "모든 사용자가 작성한 최신 리뷰를 조회합니다 (타임라인용)")
+    public ResponseEntity<ApiResponse<Page<ReviewResponse>>> getAllReviews(
+            @Parameter(description = "페이지 번호 (0부터 시작)") 
+            @RequestParam(defaultValue = "0") int page,
+            
+            @Parameter(description = "페이지 크기") 
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        log.info("=== 전체 최신 리뷰 목록 조회 ===");
+        log.info("Page: {}, Size: {}", page, size);
+        
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        
+        // reviewService에 모든 리뷰를 가져오는 메서드를 호출합니다.
+        Page<ReviewResponse> reviews = reviewService.getAllReviews(pageable);
+        
+        log.info("조회 완료: {} 건", reviews.getTotalElements());
+        
+        return ResponseEntity.ok(ApiResponse.success(reviews));
     }
 }

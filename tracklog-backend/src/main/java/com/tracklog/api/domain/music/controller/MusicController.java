@@ -4,6 +4,8 @@ import com.tracklog.api.domain.music.dto.TrackDto;
 import com.tracklog.api.domain.music.service.SpotifyService;
 import com.tracklog.api.domain.spotify.service.SpotifyAuthService;
 import com.tracklog.api.global.common.ApiResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,11 +68,20 @@ public class MusicController {
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<List<TrackDto>>> searchTracks(
             @RequestParam String query,
-            @RequestParam(defaultValue = "10") int limit
+            @RequestParam(defaultValue = "10") int limit,
+            HttpServletRequest request
     ) {
         log.info("=== 음악 검색 요청 ===");
         log.info("Query: {}, Limit: {}", query, limit);
         
+        //요청 헤더 정보 출력
+        log.info("User-Agent: {}", request.getHeader("User-Agent"));
+        log.info("Accept: {}", request.getHeader("Accept"));
+        log.info("Content-Type: {}", request.getHeader("Content-Type"));
+        log.info("Authorization: {}", request.getHeader("Authorization") != null ? "있음" : "없음");
+
+        log.info("Limit 타입: {}, 값: {}", limit);
+
         try {
             List<TrackDto> tracks = spotifyService.searchTracks(query, limit);
             log.info("✓ 검색 성공: {}개 결과 반환", tracks.size());
@@ -225,6 +236,7 @@ public class MusicController {
         }
     }
     
+    
     /**
      * 디버깅: 토큰 수동 설정 (테스트용)
      */
@@ -247,6 +259,34 @@ public class MusicController {
     /**
      * Health Check
      */
+    /**
+ * Track 저장 (리뷰 작성 전 필수)
+ */
+    @PostMapping("/tracks/save")
+    public ResponseEntity<ApiResponse<TrackDto>> saveTrack(
+        @RequestBody Map<String, String> request
+    )  {
+        String spotifyId = request.get("spotifyId");
+    
+        log.info("=== 트랙 저장 요청 ===");
+        log.info("Spotify ID: {}", spotifyId);
+    
+        try {
+           // Spotify에서 트랙 정보 가져오기
+            TrackDto trackDto = spotifyService.getTrack(spotifyId);
+        
+            // DB에 저장 (중복이면 기존 것 반환)
+            spotifyService.saveTrack(trackDto);
+        
+            log.info("✓ 트랙 저장 완료: {} - {}", trackDto.getName(), trackDto.getArtist());
+        
+            return ResponseEntity.ok(ApiResponse.success(trackDto));
+        
+        } catch (Exception e) {
+            log.error("✗ 트랙 저장 실패: {}", e.getMessage(), e);
+            throw new RuntimeException("트랙 저장에 실패했습니다: " + e.getMessage());
+        }
+    }
     @GetMapping("/health")
     public ResponseEntity<ApiResponse<Map<String, Object>>> healthCheck() {
         Map<String, Object> health = new HashMap<>();
@@ -256,4 +296,28 @@ public class MusicController {
         
         return ResponseEntity.ok(ApiResponse.success(health));
     }
+    /**
+ * 인기 음악 TOP 50
+ */
+    @GetMapping("/popular")
+    public ResponseEntity<ApiResponse<List<TrackDto>>> getPopularTracks(
+        @RequestParam(defaultValue = "20") int limit
+    ){
+        log.info("=== 인기 음악 TOP 조회 ===" );
+     
+        try {
+        // Spotify 글로벌 TOP 50 플레이리스트 ID
+        // 또는 "top 50 global", "viral 50" 등으로 검색
+            List<TrackDto> tracks = spotifyService.searchTracks("top 50 global", limit);
+        
+            log.info("✓ 인기 음악 조회 성공: {}개", tracks.size());
+        
+            return ResponseEntity.ok(ApiResponse.success(tracks));
+        
+        } catch (Exception e) {
+            log.error("✗ 인기 음악 조회 실패", e);
+            throw new RuntimeException("인기 음악 조회 실패: " + e.getMessage());
+        }
+    }
+
 }

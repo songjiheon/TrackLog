@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 public class TrackRatingStatistics {
     
-    private Long trackId;
+    private String trackId;
     private String trackName;
     private String artist;
     private Double averageRating;
