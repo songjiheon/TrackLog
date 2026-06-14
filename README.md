@@ -26,6 +26,7 @@ TrackLog는 사용자의 음악 취향 데이터를 기반으로 개인화된 �
 <p>
   <img src="https://github.com/user-attachments/assets/67d1eee9-4785-4d0c-b57d-3fb578eb719b"width="220">
   <img src="https://github.com/user-attachments/assets/2351fe28-dbd8-4f70-ba30-f5b2b044846c" width="220">
+  <img src="https://github.com/user-attachments/assets/f1561884-32b4-4d21-8009-d877066ee9c5" width="220">
 </p>
 
 ---
@@ -40,6 +41,10 @@ TrackLog는 사용자의 음악 취향 데이터를 기반으로 개인화된 �
 </p>
 
 ---
+## 프로필 화면
+<p>
+<img src="https://github.com/user-attachments/assets/65b34f94-c6b1-4b58-9b6a-e8886237b42c" width="220">
+</p>
 
 ## ✨ 주요 기능
 
