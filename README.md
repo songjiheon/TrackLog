@@ -35,7 +35,8 @@ TrackLog는 사용자의 음악 취향 데이터를 기반으로 개인화된 �
 ## 리뷰 작성 & 플레이리스트 생성 화면
 <p>
 <img src="https://github.com/user-attachments/assets/bc35ea38-054d-4720-84af-005c16fd2787"width="220">
-  <img src="https://github.com/user-attachments/assets/76c66599-18e7-4a40-b970-ae9fb5d9472e" width="220">
+<img src="https://github.com/user-attachments/assets/76c66599-18e7-4a40-b970-ae9fb5d9472e" width="220">
+<img src="https://github.com/user-attachments/assets/218e9307-81da-47a6-90cf-73381a4c4d70" width="220">
 </p>
 
 ---
