@@ -18,12 +18,12 @@ public class ApiResponse<T> {
         return new ApiResponse<>(true, data, null);
     }
     
-    // 에러 응답 (간단)
+    // 에러 응답 
     public static <T> ApiResponse<T> error(String code, String message) {
         return new ApiResponse<>(false, null, new ApiError(code, message, null));
     }
     
-    // 에러 응답 (상세)
+    // 에러 응답
     public static <T> ApiResponse<T> error(String code, String message, Object details) {
         return new ApiResponse<>(false, null, new ApiError(code, message, details));
     }

@@ -8,6 +8,8 @@ import com.tracklog.api.global.exception.DuplicateEmailException;
 import com.tracklog.api.global.exception.UserNotFoundException;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class UserService {
     
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     
     // 전체 사용자 조회
     public List<UserResponse> getAllUsers() {
@@ -43,9 +46,11 @@ public class UserService {
             throw new DuplicateEmailException(request.getEmail());
         }
         
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
         User user = User.builder()
                 .email(request.getEmail())
-                .password(request.getPassword()) // TODO: 암호화 필요
+                .password(encodedPassword) 
                 .nickname(request.getNickname())
                 .profileImage(request.getProfileImage())
                 .build();

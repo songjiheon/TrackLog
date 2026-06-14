@@ -2,6 +2,7 @@ package com.tracklog.api.global.exception;
 
 import com.tracklog.api.global.common.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -43,12 +44,21 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error("VALIDATION_FAILED", "입력값 검증 실패", errors));
     }
     
+    // IllegalArgumentException
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<?>> handleIllegalArgumentException(IllegalArgumentException ex) {
+        log.error("IllegalArgumentException: {}", ex.getMessage());
+        return ResponseEntity
+                .badRequest()
+                .body(ApiResponse.error("INVALID_ARGUMENT", ex.getMessage()));
+    }
+    
     // 기타 예외
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleException(Exception ex) {
         log.error("Unexpected exception", ex);
         return ResponseEntity
-                .internalServerError()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("INTERNAL_ERROR", "서버 오류가 발생했습니다"));
     }
 }
