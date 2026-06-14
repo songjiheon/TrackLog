@@ -12,6 +12,34 @@ TrackLog는 사용자의 음악 취향 데이터를 기반으로 개인화된 �
 - 음악 별점 및 리뷰 시스템 구축
 - 사용자 위치 기반 혹은 선호 아티스트의 공연 정보 제공
 
+# 프로젝트 화면
+
+## 로그인 화면 & 메인 화면
+
+<p>
+  <img src="https://github.com/user-attachments/assets/ae0720a9-6e6a-4938-844f-a2f7a6ebb446" width="220">
+  <img src="https://github.com/user-attachments/assets/b3e7e41d-7746-4ad9-853e-fd9c3086c8e9" width="220">
+</p>
+
+---
+## 음악 탐색 화면 & 공연 화면
+<p>
+  <img src="https://github.com/user-attachments/assets/67d1eee9-4785-4d0c-b57d-3fb578eb719b"width="220">
+  <img src="https://github.com/user-attachments/assets/2351fe28-dbd8-4f70-ba30-f5b2b044846c" width="220">
+</p>
+
+---
+
+
+
+## 리뷰 작성 & 플레이리스트 생성 화면
+<p>
+<img src="https://github.com/user-attachments/assets/bc35ea38-054d-4720-84af-005c16fd2787"width="220">
+  <img src="https://github.com/user-attachments/assets/76c66599-18e7-4a40-b970-ae9fb5d9472e" width="220">
+</p>
+
+---
+
 ## ✨ 주요 기능
 
 ### 1. 사용자 인증 및 프로필 관리
@@ -71,3 +99,10 @@ tracklog-frontend/
 ├── Common        # 앱 전반에서 재사용되는 공통 UI/디자인 시스템
 └── Utils/        # Extension 클래스
 ```
+
+## 유튜브
+[📺 ppt 발표 영상 ](https://www.youtube.com/watch?v=IndBNQJSLB4)
+
+
+
+
