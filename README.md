@@ -52,9 +52,9 @@ TrackLog는 사용자의 음악 취향 데이터를 기반으로 개인화된 �
 - Spotify Web API
 - KOPIS API (공연예술통합전산망)
 
-## 📂 프로젝트 구조
+### 📂 프로젝트 구조 (Project Structure)
 
-\```
+```text
 tracklog-backend/
 ├── controller/   # API 엔드포인트 (Music, Performance, Auth)
 ├── service/      # 비즈니스 로직 (Spotify/KOPIS 연동, 리뷰 처리)
@@ -65,9 +65,9 @@ tracklog-backend/
 
 tracklog-frontend/
 ├── Views/        # SwiftUI 화면
-├── ViewModels/ #비즈니스 로직 및 상태 관리
-├── Models/ # 데이터 구조 및 객체 모델
-├── Services # API 통신 및 외부 서비스 연동
-├──  Common # 앱 전반에서 재사용되는 공통 UI/디자인 시스템
-└── Utils/      # Extension 클래스
-\```
+├── ViewModels/   # 비즈니스 로직 및 상태 관리
+├── Models/       # 데이터 구조 및 객체 모델
+├── Services      # API 통신 및 외부 서비스 연동
+├── Common        # 앱 전반에서 재사용되는 공통 UI/디자인 시스템
+└── Utils/        # Extension 클래스
+```
